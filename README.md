@@ -26,7 +26,7 @@
 
 ### Outputs
 
-All results are automatically saved in `/output/` as CSV and plots (PNG / PDF).  
+Results can optionally be saved as CSV and plots (PNG/PDF) if `save_csv=True` (or module-dependent) is in `/output/`.  
 Example directory structure:
 
 ```
@@ -61,7 +61,7 @@ import psytools as pt
 results = pt.psyacoustic_analysis(
     input_path="example.wav",
     input_mode="wave",
-    params=["loudness_zwicker","sharpness"]
+    params=["loudness_zwicker","sharpness"],
     time_varying=True,
     show_plots=True,
 )
@@ -69,7 +69,7 @@ print(results["sharpness"])
 ```
 ---
 
-## Module Reference
+## Modules
 
 ## `loudness.py`
 
@@ -81,7 +81,7 @@ Implements **Zwicker loudness** according to **ISO 532-1:2017** for stationary a
 |----------------|-----------|-----------------|
 | `signal` | `np.ndarray`, optional | Audio waveform (mono). |
 | `fs` | `int`, optional | Sampling frequency in Hz. |
-| `cal` | `float`, optional | Calibration factor (default √8, ≈ 100 dB SPL FS). |
+| `cal` | `float`, optional | Calibration factor (default √8). |
 | `spectrum_db` | `np.ndarray`, optional | 1/3-octave SPL spectrum (28 bands). |
 | `output_in_phon` | `bool`, optional | Convert sones → phon if True. |
 | `remove` | `bool`, optional | Apply warm-up correction (stationary). |
@@ -100,7 +100,7 @@ Implements **Zwicker loudness** according to **ISO 532-1:2017** for stationary a
 | **Name** | **Description** |
 |-----------|----------------|
 | `total_loudness` | Total loudness (scalar / time series). |
-| `specific_loudness` | Specific loudness (240 Bark bins). |
+| `specific_loudness` | Specific loudness (240 Bark bins, shape = (time × 240)). |
 | `percentiles` | Dictionary with `Nmax`, `N5` for time-varying mode. |
 
 **Helper Functions**
@@ -127,7 +127,7 @@ Computes **acoustic sharpness** (acum) using **DIN 45692**, **Aures**, or **von 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
 | `signal` | `np.ndarray`, optional | Mono waveform. |
-| `sample_rate` | `int`, optional | Sampling rate (default 48 kHz). |
+| `fs` | `int`, optional | Sampling rate (default 48 kHz). |
 | `weighting` | `str`, optional | `'DIN 45692'`, `'Aures'`, or `'von Bismarck'`. |
 | `time_varying` | `bool`, optional | Compute per frame. |
 | `plot` | `bool`, optional | Show sharpness plot. |
@@ -136,7 +136,7 @@ Computes **acoustic sharpness** (acum) using **DIN 45692**, **Aures**, or **von 
 | `specific_loudness` | `np.ndarray`, optional | Precomputed specific loudness array. |
 | `total_loudness` | `float or ndarray`, optional | Total loudness input. |
 | `output_dir` | `str`, optional | Directory for CSV export. |
-| `safe_csv` | `bool`, optional | Save results as CSV. |
+| `save_csv` | `bool`, optional | Save results as CSV. |
 
 **Returns**
 
@@ -174,7 +174,7 @@ Computes **fluctuation strength (vacil)** based on the **Zwicker model (ISO 53
 | `plot` | `bool`, optional | Generate fluctuation strength plots. |
 | `font_size` | `int`, optional | Font size for plots. |
 | `main_color` | `str`, optional | Plot color. |
-| `cmap` | `str`, optional | Colormap (default `'viridis'`). |
+| `cmap` | `str`, optional | Colormap for specific fluctuation strength(default `'viridis'`). |
 | `save_csv` | `bool`, optional | Save results as CSV. |
 | `output_dir` | `str`, optional | Output directory. |
 
@@ -256,7 +256,7 @@ Helper functions for modulation‑based psychoacoustic analysis.
 **References**
 
 - ISO 532‑1:2017 — *Methods for calculating loudness – Zwicker method*  
-- Fastl & Zwicker (2007)
+- E. Zwicker & H. Fastl (2017) *Psychoacoustics: Facts and Models*
 
 ---
 
@@ -272,14 +272,14 @@ Computes the **Aures tonality index** for stationary or time‑varying input sig
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
-| `signal_in` | `np.ndarray` | Input monophonic audio signal. |
-| `sample_rate` | `int` | Sampling frequency in Hz. |
+| `signal` | `np.ndarray` | Input monophonic audio signal. |
+| `fs` | `int` | Sampling frequency in Hz. |
 | `time_varying` | `bool`, optional | If True, compute frame-wise tonality (default True). |
 | `plot` | `bool`, optional | Display time-varying tonality results (default False). |
 | `font_size` | `int`, optional | Font size for plots (default 14). |
 | `main_color` | `str`, optional | Main color for plotting total loudness (default `'blue'`). |
-| `safe_csv` | `bool`, optional | Export results to CSV if True (default False). |
-| `output_dir` | `str`, optional | Directory for CSV export (required if `safe_csv=True`). |
+| `save_csv` | `bool`, optional | Export results to CSV if True (default False). |
+| `output_dir` | `str`, optional | Directory for CSV export (required if `save_csv=True`). |
 
 ### Returns
 
@@ -296,18 +296,18 @@ Computes the **Tone‑to‑Noise Ratio (TNR)** according to **ECMA‑418‑1**.
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
-| `signal_in` | `np.ndarray` | Input audio signal (1D, mono). |
-| `sample_rate` | `int` | Sampling frequency in Hz. |
+| `signal` | `np.ndarray` | Input audio signal (1D, mono). |
+| `fs` | `int` | Sampling frequency in Hz. |
 | `frame_size` | `int`, optional | FFT frame size (default 16384). |
 | `hop_size` | `int`, optional | Hop size between frames (default 8192, 50% overlap). |
 | `time_varying` | `bool`, optional | Compute time-varying TNR if True (default False). |
 | `plot` | `bool`, optional | Show plots of spectrum and TNR (default False). |
 | `font_size` | `int`, optional | Font size for the plots (default 14). |
-| `main_color` | `str`, optional | Main color used for plotting total loudness (default `'blue'`). |
-| `cmap` | `str`, optional | Colormap used for plotting specific loudness (default `'viridis'`). |
+| `main_color` | `str`, optional | Main color used for plot (default `'blue'`). |
+| `cmap` | `str`, optional | Colormap used for plotting heatmaps (default `'viridis'`). |
 | `prominence_only` | `bool`, optional | Return only prominent tones (default False). |
-| `safe_csv` | `bool`, optional | Export CSV files if True (default False). |
-| `output_dir` | `str`, optional | Directory to save CSV files (required if `safe_csv=True`). |
+| `save_csv` | `bool`, optional | Export CSV files if True (default False). |
+| `output_dir` | `str`, optional | Directory to save CSV files (required if `save_csv=True`). |
 
 ### Returns
 
@@ -315,11 +315,11 @@ Computes the **Tone‑to‑Noise Ratio (TNR)** according to **ECMA‑418‑1**.
 |-----------|-----------|----------------|
 | `results` | `dict` | Dictionary containing: |
 | || `'tnr'` : list or array — TNR values (dB). |
-| || `'frequencies'` : np.ndarray — Detected tone frequencies (Hz). |
-| || `'prominent'` : np.ndarray — Boolean flags for prominent tones. |
+| || `'freqs'` : np.ndarray — Detected tone frequencies (Hz). |
+| || `'is_prominent'` : np.ndarray — Boolean flags for prominent tones. |
 | || `'times'` : np.ndarray or None — Frame timestamps (s) for time-varying analysis. |
 | || `'peak_limits'` : list[tuple[int, int]] — Frequency bin limits of detected peaks. |
-| || `'f_axis'` : np.ndarray — Frequency axis used for PSD calculation. |
+| || `'freq_axis'` : np.ndarray — Frequency axis used for PSD calculation. |
 
 ## `prominence_ratio()`
 
@@ -329,19 +329,19 @@ Computes the **Prominence Ratio (PR)** per **ECMA‑418‑1** standard.
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
-| `signal_in` | `np.ndarray` | Input audio signal (mono). |
-| `sample_rate` | `int` | Sampling rate in Hz. |
+| `signal` | `np.ndarray` | Input audio signal (mono). |
+| `fs` | `int` | Sampling rate in Hz. |
 | `frame_size` | `int`, optional | FFT frame size (default 16384). |
 | `hop_size` | `int`, optional | Hop size between frames (default 8192). |
 | `time_varying` | `bool`, optional | Compute time-resolved PR if True (default False). |
 | `plot` | `bool`, optional | Show plots of PR and spectrum (default False). |
 | `font_size` | `int`, optional | Font size for the plots (default 14). |
-| `main_color` | `str`, optional | Main color for plotting total loudness (default `'blue'`). |
-| `cmap` | `str`, optional | Colormap used for plotting specific loudness (default `'viridis'`). |
+| `main_color` | `str`, optional | Main color for plot (default `'blue'`). |
+| `cmap` | `str`, optional | Colormap used for plotting heatmaps (default `'viridis'`). |
 | `window_type` | `str`, optional | Window function for FFT (default `'hann'`). |
 | `frequency_range` | `tuple`, optional | Frequency range for analysis (Hz) (default (89.1, 11200)). |
-| `output_dir` | `str`, optional | Directory for saving CSV files (required if `safe_csv=True`). |
-| `safe_csv` | `bool`, optional | Export PR data to CSV if True (default False). |
+| `output_dir` | `str`, optional | Directory for saving CSV files (required if `save_csv=True`). |
+| `save_csv` | `bool`, optional | Export PR data to CSV if True (default False). |
 
 ### Returns
 
@@ -385,7 +385,7 @@ Computes total and specific **loudness** according to the **Sottek hearing model
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
-| `insig` | `np.ndarray` | Input signal (mono or stereo). |
+| `signal` | `np.ndarray` | Input signal (mono or stereo). |
 | `fs` | `int or float` | Sampling frequency in Hz. |
 | `plot` | `bool`, optional | Plot total and specific loudness results. |
 | `font_size` | `int`, optional | Font size for plots (default = 14). |
@@ -419,7 +419,7 @@ Computes **tonality metrics** using the **Sottek model** (ECMA‑418‑2:2025).
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
-| `insig` | `np.ndarray` | Input signal [samples × channels] in Pascal. |
+| `signal` | `np.ndarray` | Input signal [samples × channels] in Pascal. |
 | `fs` | `int` | Sampling frequency in Hz (resampled to 48 kHz if different). |
 | `plot` | `bool`, optional | Plot tonality results. |
 | `font_size` | `int`, optional | Font size for plots (default 14). |
@@ -428,7 +428,7 @@ Computes **tonality metrics** using the **Sottek model** (ECMA‑418‑2:2025).
 | `fieldtype` | `str`, optional | `'free'` or `'diffuse'` (affects ear filtering). |
 | `time_skip` | `float`, optional | Initial time (s) skipped for averaging (default 0.304 s). |
 | `calibration_factor` | `float`, optional | Scaling factor applied before processing. |
-| `safe_csv` | `bool`, optional | Save CSV outputs if True. |
+| `save_csv` | `bool`, optional | Save CSV outputs if True. |
 | `output_dir` | `str`, optional | Target directory for CSV output. |
 | `**kwargs` | `dict`, optional | Additional parameters for internal processing. |
 
@@ -448,7 +448,7 @@ Computes **tonality metrics** using the **Sottek model** (ECMA‑418‑2:2025).
 |  || `'tonalityTDepFreqs'` — Frequency‑resolved time‑dependent tonality. |
 |  || `'bandCentreFreqs'` — Bark‑band center frequencies (Hz). |
 |  || `'timeOut'` — Output time vector (s). |
-|  || `'timeInsig'` — Input time vector (s). |
+|  || `'timesignal'` — Input time vector (s). |
 |  || `'soundField'` — Sound field used (`'free'` or `'diffuse'`). |
 
 **Helper Functions**
@@ -477,7 +477,7 @@ Central entry point for automated psychoacoustic analysis.
 | **Name** | **Type** | **Description** |
 |-----------|-----------|-----------------|
 | `input_path` | `str` | Path to the input file (audio, spectrum, or AVL). |
-| `input_mode` | `str` | `'wave'`, `'audio'`, `'spectrum'`, or `'AVL'`. |
+| `input_mode` | `str` | Defines the input mode: <br> • **`'wave'`** – For standard **WAV** files (PCM), loaded via `scipy.io.wavfile`. <br> • **`'audio'`** – Uses **librosa** for general audio decoding (e.g., **MP3**, AAC, FLAC). <br> • **`'spectrum'`** – Accepts spectral input according to standard conventions (e.g., 1/3-octave SPL values per ISO 532-1). <br> • **`'AVL'`** – Special mode that reads data from **Excel files** in the AVL input format. |
 | `sound_field` | `str` | `'free'` or `'diffuse'` field for loudness calculations. |
 | `time_varying` | `bool` | Enables time-varying calculations for supported metrics. |
 | `time_resolution` | `str` | `'standard'` (2 ms) or `'high'` (0.5 ms). |
@@ -601,7 +601,7 @@ Provides general‑purpose utilities for **audio loading**, **spectrum synthesis
 |---------------|----------------|
 | `synthesize_signal_from_spectrum()` | Creates synthetic test signals from sinusoidal spectral components. |
 | `process_mic_data()` | Loads microphone CSV data, converts to Pa, and computes 1/3‑octave spectra. |
-| `load_audio()` / `load_audio_librosa()` | Load audio signals from WAV or compressed formats, normalize to RMS = 1. |
+| `load_audio()` / `load_audio_librosa()` | Load audio signals from WAV or compressed formats, normalize. |
 | `plot_input()` | Visualizes time signals or 1/3‑octave spectra. |
 | `build_output_structure()` | Creates `/output/csv`, `/output/plots/pdf`, and `/output/plots/png` directories automatically. |
 | `save_all_figures()` | Saves all open matplotlib figures as PNG and PDF. |
