@@ -71,11 +71,11 @@ print(results["sharpness"])
 
 ## Module Reference
 
-## 🔊 `loudness.py`
+## `loudness.py`
 
 Implements **Zwicker loudness** according to **ISO 532-1:2017** for stationary and time-varying inputs.
 
-### 🧩 Main Function — `loudness_zwicker()`
+### Main Function — `loudness_zwicker()`
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
@@ -118,11 +118,11 @@ Implements **Zwicker loudness** according to **ISO 532-1:2017** for stationary a
 
 ---
 
-## ✨ `sharpness.py`
+## `sharpness.py`
 
 Computes **acoustic sharpness** (acum) using **DIN 45692**, **Aures**, or **von Bismarck** weighting.
 
-### 🧩 Main Function — `acoustic_sharpness()`
+### Main Function — `acoustic_sharpness()`
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
@@ -154,15 +154,15 @@ Computes **acoustic sharpness** (acum) using **DIN 45692**, **Aures**, or **von 
 **References**
 
 - DIN 45692:2009 — *Acoustics – Sharpness determination*  
-- Fastl & Zwicker (2007)
+- E. Zwicker & H. Fastl (2017) *Psychoacoustics: Facts and Models*
 
 ---
 
-## 🌊 `fluctuation.py`
+## `fluctuation.py`
 
 Computes **fluctuation strength (vacil)** based on the **Zwicker model (ISO 532‑1)**.
 
-### 🧩 Main Function — `acoustic_fluctuation()`
+### Main Function — `acoustic_fluctuation()`
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
@@ -195,15 +195,15 @@ Computes **fluctuation strength (vacil)** based on the **Zwicker model (ISO 53
 **References**
 
 - ISO 532‑1:2017 — *Zwicker model for loudness and modulation perception*  
-- Fastl & Zwicker (2007)
+- E. Zwicker & H. Fastl (2017) *Psychoacoustics: Facts and Models*
 
 ---
 
-## ⚡ `roughness.py`
+## `roughness.py`
 
 Computes **roughness (asper)** following the **Zwicker model (ISO 532‑1)**.
 
-### 🧩 Main Function — `acoustic_roughness()`
+### Main Function — `acoustic_roughness()`
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
@@ -234,102 +234,197 @@ Computes **roughness (asper)** following the **Zwicker model (ISO 532‑1)**.
 
 **References**
 
-- ISO 532‑1:2017  
-- Fastl & Zwicker (2007)
+- ISO 532‑1:2017 — *Zwicker model for loudness and modulation perception*  
+- E. Zwicker & H. Fastl (2017) *Psychoacoustics: Facts and Models*
 
 ---
 
-## 🎵 `tonality.py`
+## `tonality_aures()`
 
-Implements **tonal perception metrics** (ECMA‑418‑1) and **Aures tonality**.
+Computes the **Aures tonality index** for stationary or time‑varying input signals.
 
-### 🧩 Main Functions
+### Parameters
 
-#### `tonality_aures()`
-Computes Aures tonality index for stationary or time‑varying input.
+| **Parameter** | **Type** | **Description** |
+|----------------|-----------|-----------------|
+| `signal_in` | `np.ndarray` | Input monophonic audio signal. |
+| `sample_rate` | `int` | Sampling frequency in Hz. |
+| `time_varying` | `bool`, optional | If True, compute frame-wise tonality (default True). |
+| `plot` | `bool`, optional | Display time-varying tonality results (default False). |
+| `font_size` | `int`, optional | Font size for plots (default 14). |
+| `main_color` | `str`, optional | Main color for plotting total loudness (default `'blue'`). |
+| `safe_csv` | `bool`, optional | Export results to CSV if True (default False). |
+| `output_dir` | `str`, optional | Directory for CSV export (required if `safe_csv=True`). |
 
-#### `tone_to_noise_ratio()`
-Computes Tone‑to‑Noise Ratio (TNR) according to ECMA‑418‑1.
+### Returns
 
-#### `prominence_ratio()`
-Computes Prominence Ratio (PR) per ECMA‑418‑1.
+| **Name** | **Type** | **Description** |
+|-----------|-----------|----------------|
+| `tonalities` | `np.ndarray or float` | Tonality index per frame (time-varying) or scalar (stationary). |
+| `times` | `np.ndarray or None` | Time vector corresponding to tonalities (None for stationary). |
 
-**Common Parameters**
+## `tone_to_noise_ratio()`
+
+Computes the **Tone‑to‑Noise Ratio (TNR)** according to **ECMA‑418‑1**.
+
+### Parameters
+
+| **Parameter** | **Type** | **Description** |
+|----------------|-----------|-----------------|
+| `signal_in` | `np.ndarray` | Input audio signal (1D, mono). |
+| `sample_rate` | `int` | Sampling frequency in Hz. |
+| `frame_size` | `int`, optional | FFT frame size (default 16384). |
+| `hop_size` | `int`, optional | Hop size between frames (default 8192, 50% overlap). |
+| `time_varying` | `bool`, optional | Compute time-varying TNR if True (default False). |
+| `plot` | `bool`, optional | Show plots of spectrum and TNR (default False). |
+| `font_size` | `int`, optional | Font size for the plots (default 14). |
+| `main_color` | `str`, optional | Main color used for plotting total loudness (default `'blue'`). |
+| `cmap` | `str`, optional | Colormap used for plotting specific loudness (default `'viridis'`). |
+| `prominence_only` | `bool`, optional | Return only prominent tones (default False). |
+| `safe_csv` | `bool`, optional | Export CSV files if True (default False). |
+| `output_dir` | `str`, optional | Directory to save CSV files (required if `safe_csv=True`). |
+
+### Returns
+
+| **Name** | **Type** | **Description** |
+|-----------|-----------|----------------|
+| `results` | `dict` | Dictionary containing: |
+| | `'tnr'` : list or array — TNR values (dB). |
+| | `'frequencies'` : np.ndarray — Detected tone frequencies (Hz). |
+| | `'prominent'` : np.ndarray — Boolean flags for prominent tones. |
+| | `'times'` : np.ndarray or None — Frame timestamps (s) for time-varying analysis. |
+| | `'peak_limits'` : list[tuple[int, int]] — Frequency bin limits of detected peaks. |
+| | `'f_axis'` : np.ndarray — Frequency axis used for PSD calculation. |
+
+## `prominence_ratio()`
+
+Computes the **Prominence Ratio (PR)** per **ECMA‑418‑1** standard.
+
+### Parameters
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
 | `signal_in` | `np.ndarray` | Input audio signal (mono). |
-| `sample_rate` | `int` | Sampling frequency (Hz). |
+| `sample_rate` | `int` | Sampling rate in Hz. |
 | `frame_size` | `int`, optional | FFT frame size (default 16384). |
 | `hop_size` | `int`, optional | Hop size between frames (default 8192). |
-| `time_varying` | `bool`, optional | Enable time‑varying mode. |
-| `plot` | `bool`, optional | Display spectrum and TNR/PR plots. |
-| `font_size` | `int`, optional | Font size for plots. |
-| `main_color` | `str`, optional | Main color for plots. |
-| `cmap` | `str`, optional | Colormap for visualizations. |
-| `prominence_only` | `bool`, optional | Return only prominent tones (TNR≥3 dB). |
-| `safe_csv` | `bool`, optional | Export CSV if True. |
-| `output_dir` | `str`, optional | CSV output directory. |
+| `time_varying` | `bool`, optional | Compute time-resolved PR if True (default False). |
+| `plot` | `bool`, optional | Show plots of PR and spectrum (default False). |
+| `font_size` | `int`, optional | Font size for the plots (default 14). |
+| `main_color` | `str`, optional | Main color for plotting total loudness (default `'blue'`). |
+| `cmap` | `str`, optional | Colormap used for plotting specific loudness (default `'viridis'`). |
+| `window_type` | `str`, optional | Window function for FFT (default `'hann'`). |
+| `frequency_range` | `tuple`, optional | Frequency range for analysis (Hz) (default (89.1, 11200)). |
+| `output_dir` | `str`, optional | Directory for saving CSV files (required if `safe_csv=True`). |
+| `safe_csv` | `bool`, optional | Export PR data to CSV if True (default False). |
 
-**Outputs**
+### Returns
 
-| **Function** | **Return Type** | **Description** |
-|---------------|----------------|-----------------|
-| `tonality_aures()` | `tuple(np.ndarray, np.ndarray)` | Tonality index (scalar/array) and time vector. |
-| `tone_to_noise_ratio()` | `dict` | Contains `tnr`, `frequencies`, `prominent`, `times`, `peak_limits`, `f_axis`. |
-| `prominence_ratio()` | `dict` | Contains `PR`, `freqs`, `is_prominent`, `times`. |
+| **Name** | **Type** | **Description** |
+|-----------|-----------|----------------|
+| `results` | `dict` | Dictionary containing: |
+| | `'PR'` : np.ndarray — PR values (vector or matrix). |
+| | `'freqs'` : np.ndarray — Frequency bins corresponding to PR values. |
+| | `'is_prominent'` : np.ndarray — Boolean mask of prominent tones. |
+| | `'times'` : np.ndarray — Time stamps for frames (only for time-varying analysis). |
 
 **Helper Functions**
 
 | Function | Description |
 |-----------|-------------|
-| `critical_band_limits()` | Calculates critical band boundaries. |
-| `octave_24th_bands()` | Generates 1/24-octave bands for tone detection. |
-| `smooth_in_db_domain()` | Smooths PSD in the decibel domain. |
-| *(+ internal Gaussian smoothing, tonal width estimation, and plotting utilities)* |  |
+| `critical_band_limits()` | Calculates critical-band frequency limits and bandwidths according to ECMA‑418‑1. |
+| `critical_bandwidth_fft()` | Maps critical-band limits (Hz) to FFT-bin spans and computes total frequency width. |
+| `band_level()` | Integrates linear PSD values within each specified frequency bin span. |
+| `check_prominence()` | Applies ECMA‑418‑1 prominence criteria to TNR or PR values. |
+| `octave_24th_bands()` | Generates 1/24‑octave frequency bands for tone detection. |
+| `smooth_in_db_domain()` | Smooths PSD in the decibel domain to reduce noise. |
+| *(+ internal Gaussian smoothing, tonal width estimation, audibility check, and plotting utilities)* |  |
 
 **References**
 
-- Aures (1985) *Acustica 59*  
-- Terhardt et al. (1982) *JASA*  
-- ECMA‑418‑1:2025
+- Aures, W. (1985). *Berechnungsverfahren für den sensorischen Wohlklang*. **Acustica**, 59.  
+- Terhardt, E. et al. (1982). *Algorithm for extraction of pitch and pitch salience*. **JASA**.  
+- ECMA‑418‑1:2025 — *Methods for the assessment of prominent discrete tones*.
 
 ---
 
-## 🧠 `sottek_hm.py`
+## `sottek_hearing_model.py`
 
 Implements **ECMA‑418‑2:2025 (Sottek hearing model)** for **loudness** and **tonality**.
 
-### 🧩 Main Functions
+## `loudness_sottek()`
 
-| Function | Description |
-|-----------|-------------|
-| `loudness_sottek()` | Computes total/specific loudness using Sottek model. |
-| `tonality_sottek()` | Computes time‑ and frequency‑dependent tonality from auditory filter outputs. |
+Computes total and specific **loudness** according to the **Sottek hearing model** (ECMA‑418‑2:2025).
 
-**Shared Parameters**
+### Parameters
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
-| `insig` | `np.ndarray` | Input signal (mono/stereo). |
-| `fs` | `int` | Sampling frequency (Hz). |
-| `plot` | `bool`, optional | Show results. |
-| `fieldtype` | `str`, optional | `'free'` or `'diffuse'` field. |
-| `calibration_factor` | `float`, optional | Calibration scaling factor. |
-| `save_csv` | `bool`, optional | Save CSV outputs. |
-| `output_dir` | `str`, optional | Export directory. |
+| `insig` | `np.ndarray` | Input signal (mono or stereo). |
+| `fs` | `int or float` | Sampling frequency in Hz. |
+| `plot` | `bool`, optional | Plot total and specific loudness results. |
+| `font_size` | `int`, optional | Font size for plots (default = 14). |
+| `main_color` | `str`, optional | Color for total loudness plot. |
+| `cmap` | `str`, optional | Colormap for specific loudness (default `'viridis'`). |
+| `fieldtype` | `str`, optional | Sound field type — `'free'` or `'diffuse'` (default `'free'`). |
+| `time_skip` | `float`, optional | Initial skip duration (s) for averaging (default 0.304 s). |
+| `calibration_factor` | `float`, optional | Scaling factor applied to the input prior to processing. |
+| `save_csv` | `bool`, optional | If True, automatically export results to CSV. |
+| `output_dir` | `str`, optional | Directory for CSV output (required if `save_csv=True`). |
+| `**kwargs` | `dict`, optional | Additional parameters (fade‑in time, block length, etc.). |
 
-**Outputs**
+### Returns
 
-| **Name** | **Description** |
-|-----------|----------------|
-| `specLoudness` | Specific loudness vs. time and Bark band (sone/Bark). |
-| `loudnessTDep` | Time‑dependent total loudness (sone). |
-| `loudnessPowAvg` | Power‑averaged loudness. |
-| `specLoudnessPowAvg` | Power‑averaged specific loudness. |
-| `specTonality` | Specific tonality per Bark band. |
-| `tonalityTDep` | Time‑varying tonality index. |
-| `soundField` | Applied sound field setting. |
+| **Name** | **Type** | **Description** |
+|-----------|-----------|----------------|
+| `OUT` | `dict` | Dictionary containing: |
+|  | `'specLoudness'` — Specific loudness vs. time and Bark band (sone/Bark). |
+|  | `'loudnessTDep'` — Time‑dependent total loudness (sone). |
+|  | `'loudnessPowAvg'` — Power‑averaged total loudness (sone). |
+|  | `'specLoudnessPowAvg'` — Power‑averaged specific loudness (sone/Bark). |
+|  | `'bandCentreFreqs'` — Bark‑band center frequencies (Hz). |
+|  | `'timeOut'` — Output time vector (s). |
+|  | `'soundField'` — Sound field setting (`'free'` or `'diffuse'`). |
+
+## `tonality_sottek()`
+
+Computes **tonality metrics** using the **Sottek model** (ECMA‑418‑2:2025).
+
+### Parameters
+
+| **Parameter** | **Type** | **Description** |
+|----------------|-----------|-----------------|
+| `insig` | `np.ndarray` | Input signal [samples × channels] in Pascal. |
+| `fs` | `int` | Sampling frequency in Hz (resampled to 48 kHz if different). |
+| `plot` | `bool`, optional | Plot tonality results. |
+| `font_size` | `int`, optional | Font size for plots (default 14). |
+| `main_color` | `str`, optional | Main color for total tonality. |
+| `cmap` | `str`, optional | Colormap for specific tonality (default `'viridis'`). |
+| `fieldtype` | `str`, optional | `'free'` or `'diffuse'` (affects ear filtering). |
+| `time_skip` | `float`, optional | Initial time (s) skipped for averaging (default 0.304 s). |
+| `calibration_factor` | `float`, optional | Scaling factor applied before processing. |
+| `safe_csv` | `bool`, optional | Save CSV outputs if True. |
+| `output_dir` | `str`, optional | Target directory for CSV output. |
+| `**kwargs` | `dict`, optional | Additional parameters for internal processing. |
+
+### Returns
+
+| **Name** | **Type** | **Description** |
+|-----------|-----------|----------------|
+| `OUT` | `dict` | Dictionary containing: |
+|  | `'specTonality'` — Time‑dependent specific tonality per Bark band. |
+|  | `'specTonalityAvg'` — Time‑averaged specific tonality. |
+|  | `'specTonalityFreqs'` — Frequency‑resolved specific tonality. |
+|  | `'specTonalityAvgFreqs'` — Power‑averaged frequency‑resolved tonality. |
+|  | `'specTonalLoudness'` — Tonal loudness per Bark band. |
+|  | `'specNoiseLoudness'` — Noise loudness per Bark band. |
+|  | `'tonalityTDep'` — Time‑dependent overall tonality. |
+|  | `'tonalityAvg'` — Time‑averaged overall tonality. |
+|  | `'tonalityTDepFreqs'` — Frequency‑resolved time‑dependent tonality. |
+|  | `'bandCentreFreqs'` — Bark‑band center frequencies (Hz). |
+|  | `'timeOut'` — Output time vector (s). |
+|  | `'timeInsig'` — Input time vector (s). |
+|  | `'soundField'` — Sound field used (`'free'` or `'diffuse'`). |
 
 **Helper Functions**
 
@@ -343,38 +438,93 @@ Implements **ECMA‑418‑2:2025 (Sottek hearing model)** for **loudness** and *
 
 **References**
 
-- ECMA‑418‑2:2025 — *Sottek Hearing Model*
+- ECMA‑418‑2:2025 — *Methods for describing human perception based on the Sottek Hearing Model*
 
 ---
 
 ###  `analysis.py`
 Central entry point for automated psychoacoustic analysis.
 
-**Function:** `psyacoustic_analysis()`
+### Main Function — `psyacoustic_analysis()`
 
-#### Parameters
-| Name | Type | Description |
-|------|------|--------------|
-| `input_path` | str | Path to input audio/spectrum file |
-| `input_mode` | str | `'wave'`, `'spectrum'`, `'audio'`, or `'AVL'` |
-| `sound_field` | str | `'free'` or `'diffuse'` |
-| `time_varying` | bool | Enables time-varying mode |
-| `time_resolution` | str | `'standard'` (2 ms) or `'high'` (0.5 ms) |
-| `show_plots` | bool | Display figures |
-| `save_csv` | bool | Save CSV automatically |
-| `params` | list[str] | Select metrics to compute |
-| `output_base` | str | Output directory |
+### Parameters
 
-#### Returns
-Dictionary with computed psychoacoustic metrics for each enabled module.
+| **Name** | **Type** | **Description** |
+|-----------|-----------|-----------------|
+| `input_path` | `str` | Path to the input file (audio, spectrum, or AVL). |
+| `input_mode` | `str` | `'wave'`, `'audio'`, `'spectrum'`, or `'AVL'`. |
+| `sound_field` | `str` | `'free'` or `'diffuse'` field for loudness calculations. |
+| `time_varying` | `bool` | Enables time-varying calculations for supported metrics. |
+| `time_resolution` | `str` | `'standard'` (2 ms) or `'high'` (0.5 ms). |
+| `show_plots` | `bool` | Display result figures interactively. |
+| `save_csv` | `bool` | Automatically export results to CSV files. |
+| `params` | `list[str]` | Select psychoacoustic metrics to compute. Supported values: <br>  • `"plot_input"` — Plot waveform or spectrum.<br>  • `"loudness_zwicker"` — Loudness (ISO 532-1).<br>  • `"loudness_sottek"` — Sottek loudness (ECMA 418-2).<br>  • `"sharpness"` — Sharpness (DIN 45692).<br>  • `"fluctuation"` — Fluctuation strength (vacil).<br>  • `"roughness"` — Roughness (asper).<br>  • `"tonality_aures"` — Aures tonality (1985).<br>  • `"tonality_sottek"` — Sottek tonality (ECMA 418-2).<br>  • `"tnr"` — Tone-to-Noise Ratio (ECMA 418-1).<br>  • `"pr"` — Prominence Ratio (ECMA 418-1). |
+| `output_base` | `str` | Base directory for saving plots and data. |
 
 ---
 
-## 📈 `compare_metrics.py`
+### Returns
+
+Returns a **dictionary** with computed psychoacoustic results depending on the requested metrics in `params`.
+
+| **Key in `results` dict** | **Value / Description** |
+|-----------------------------|--------------------------|
+| `'loudness_stationary'` | Total **Zwicker loudness** (sones) for stationary input. |
+| `'loudness_timevarying'` | Time-varying loudness (array, sones vs. time). |
+| `'sottek'` | Output dictionary from **`loudness_sottek()`** containing: `'loudnessTDep'`, `'loudnessPowAvg'`, `'specLoudness'`, `'specLoudnessPowAvg'`, `'bandCentreFreqs'`, `'timeOut'`. |
+| `'sharpness'` | Sharpness values (**acum**) — scalar (stationary) or vector (time-varying). |
+| `'fluctuation'` | Time-varying **fluctuation strength** (**vacil**). |
+| `'fmod_fluc'` | Detected modulation frequency (Hz) from fluctuation analysis. |
+| `'roughness'` | Time-varying **roughness** (**asper**). |
+| `'tonality_sottek'` | Time-averaged **Sottek tonality index** (**tu_HMS**). |
+| `'tonality_aures'` | Average **Aures tonality index** (**t.u.**). |
+| `'tnr'` | Dictionary from `tone_to_noise_ratio()` with keys: `'tnr'`, `'frequencies'`, `'prominent'`, `'times'`, `'peak_limits'`, `'f_axis'`. |
+| `'prominence_ratio'` | Dictionary from `prominence_ratio()` with keys: `'PR'`, `'freqs'`, `'is_prominent'`, `'times'`. |
+| `'plot_input'` | (optional) Returns a plotted waveform or spectrum if `"plot_input"` is included in `params`. |
+
+---
+
+### Example Usage
+
+```python
+from psytoolbox.analysis import psyacoustic_analysis
+
+results = psyacoustic_analysis(
+    input_path="example.wav",
+    input_mode="audio",
+    sound_field="free",
+    time_varying=True,
+    time_resolution="standard",
+    show_plots=False,
+    save_csv=True,
+    params=[
+        "plot_input",
+        "loudness_zwicker",
+        "sharpness",
+        "fluctuation",
+        "roughness",
+        "tonality_aures",
+        "tonality_sottek",
+        "tnr",
+        "pr"
+    ],
+    output_base="output/session_01"
+)
+
+# Access results
+print(results["loudness_stationary"])
+print(results["sharpness"])
+print(results["tnr"]["tnr"])          # TNR values (dB)
+print(results["prominence_ratio"]["PR"])
+```
+
+---
+
+## `compare_metrics.py`
 
 Visualizes and compares psychoacoustic results across different analysis runs.
 
-### 🧩 Main Function — `compare_metrics()`
+### Main Function — `compare_metrics()`
 
 | **Parameter** | **Type** | **Description** |
 |----------------|-----------|-----------------|
@@ -385,22 +535,7 @@ Visualizes and compares psychoacoustic results across different analysis runs.
 | `show` | `bool`, optional | Show plots interactively (default False). |
 
 **Returns**
-
-| **Name** | **Description** |
-|-----------|----------------|
-| *(None)* | Generates and saves all comparison plots (PNG/PDF). |
-
-**Helper Functions**
-
-| Function | Description |
-|-----------|-------------|
-| `plot_loudness_stationary_compare()` | Compare stationary loudness results. |
-| `plot_loudness_time_varying_compare()` | Compare time‑varying loudness (Zwicker). |
-| `plot_sharpness_time_varying_compare()` | Compare sharpness time‑series. |
-| `plot_fluctuation_strength_compare()` | Compare fluctuation strength curves. |
-| `plot_loudness_sottek_compare()` | Compare ECMA‑418‑2 Sottek loudness results. |
-| `plot_tonality_sottek_compare()` | Compare Sottek tonality across runs. |
-| `plot_tonality_aures_compare()` | Compare Aures tonality results. |
+ Generates and saves all comparison plots (PNG/PDF).
 
 **Features**
 
@@ -412,11 +547,11 @@ Visualizes and compares psychoacoustic results across different analysis runs.
 
 ---
 
-## 🎛️ `signal_processing.py`
+## `signal_processing.py`
 
 Provides general‑purpose utilities for **audio loading**, **spectrum synthesis**, and **plotting**.
 
-### 🧩 Functions
+### Functions
 
 | **Function** | **Description** |
 |---------------|----------------|
@@ -435,7 +570,7 @@ Provides general‑purpose utilities for **audio loading**, **spectrum synthesis
 
 ---
 
-## 🌀 `modulation.py`
+## `modulation.py`
 
 Helper functions for modulation‑based psychoacoustic analysis.
 
@@ -457,19 +592,13 @@ Helper functions for modulation‑based psychoacoustic analysis.
 ---
 
 
-## 🧪 Validation
+## Validation
 
-Validation against reference MATLAB Psychoacoustics Toolbox and ECMA verification datasets shows < 2 % RMS deviation for all metrics within standard-defined frequency and level ranges.
-
----
-
-## 📄 Citation
-
-> Greco, G. F., *PsyTools: A Python Toolbox for Psychoacoustic Metrics (Zwicker, Aures, Sottek, ECMA‑418)*, 2025.
+...
 
 ---
 
-## ⚖️ License
+## License
 
 Released under the **MIT License**.  
 See the [LICENSE](LICENSE) file for details.
