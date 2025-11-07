@@ -26,7 +26,7 @@
 
 ### Outputs
 
-Results can optionally be saved as CSV and plots (PNG/PDF) if `save_csv=True` (or module-dependent) is in `/output/`.  
+Results can optionally be saved as CSV and plots (PNG/PDF) if `save_csv=True` (or module-dependent). Files are written to the `/output/` directory.  
 Example directory structure:
 
 ```
@@ -174,7 +174,7 @@ Computes **fluctuation strength (vacil)** based on the **Zwicker model (ISO 53
 | `plot` | `bool`, optional | Generate fluctuation strength plots. |
 | `font_size` | `int`, optional | Font size for plots. |
 | `main_color` | `str`, optional | Plot color. |
-| `cmap` | `str`, optional | Colormap for specific fluctuation strength(default `'viridis'`). |
+| `cmap` | `str`, optional | Colormap for specific fluctuation strength (default `'viridis'`). |
 | `save_csv` | `bool`, optional | Save results as CSV. |
 | `output_dir` | `str`, optional | Output directory. |
 
@@ -277,7 +277,7 @@ Computes the **Aures tonality index** for stationary or time‑varying input sig
 | `time_varying` | `bool`, optional | If True, compute frame-wise tonality (default True). |
 | `plot` | `bool`, optional | Display time-varying tonality results (default False). |
 | `font_size` | `int`, optional | Font size for plots (default 14). |
-| `main_color` | `str`, optional | Main color for plotting total loudness (default `'blue'`). |
+| `main_color` | `str`, optional | Main color for plot (default `'blue'`). |
 | `save_csv` | `bool`, optional | Export results to CSV if True (default False). |
 | `output_dir` | `str`, optional | Directory for CSV export (required if `save_csv=True`). |
 
@@ -348,10 +348,10 @@ Computes the **Prominence Ratio (PR)** per **ECMA‑418‑1** standard.
 | **Name** | **Type** | **Description** |
 |-----------|-----------|----------------|
 | `results` | `dict` | Dictionary containing: |
-| || `'PR'` : np.ndarray — PR values (vector or matrix). |
+| || `'pr'` : np.ndarray — PR values (vector or matrix). |
 | || `'freqs'` : np.ndarray — Frequency bins corresponding to PR values. |
 | || `'is_prominent'` : np.ndarray — Boolean mask of prominent tones. |
-| || `'times'` : np.ndarray — Time stamps for frames (only for time-varying analysis). |
+| || `'times'` : np.ndarray — Timestamps for frames (only for time-varying analysis). |
 
 **Helper Functions**
 
@@ -391,7 +391,7 @@ Computes total and specific **loudness** according to the **Sottek hearing model
 | `font_size` | `int`, optional | Font size for plots (default = 14). |
 | `main_color` | `str`, optional | Color for total loudness plot. |
 | `cmap` | `str`, optional | Colormap for specific loudness (default `'viridis'`). |
-| `fieldtype` | `str`, optional | Sound field type — `'free'` or `'diffuse'` (default `'free'`). |
+| `sound_field` | `str`, optional | Sound field type — `'free'` or `'diffuse'` (default `'free'`). |
 | `time_skip` | `float`, optional | Initial skip duration (s) for averaging (default 0.304 s). |
 | `calibration_factor` | `float`, optional | Scaling factor applied to the input prior to processing. |
 | `save_csv` | `bool`, optional | If True, automatically export results to CSV. |
@@ -425,7 +425,7 @@ Computes **tonality metrics** using the **Sottek model** (ECMA‑418‑2:2025).
 | `font_size` | `int`, optional | Font size for plots (default 14). |
 | `main_color` | `str`, optional | Main color for total tonality. |
 | `cmap` | `str`, optional | Colormap for specific tonality (default `'viridis'`). |
-| `fieldtype` | `str`, optional | `'free'` or `'diffuse'` (affects ear filtering). |
+| `sound_field` | `str`, optional | `'free'` or `'diffuse'` (affects ear filtering). |
 | `time_skip` | `float`, optional | Initial time (s) skipped for averaging (default 0.304 s). |
 | `calibration_factor` | `float`, optional | Scaling factor applied before processing. |
 | `save_csv` | `bool`, optional | Save CSV outputs if True. |
@@ -503,8 +503,8 @@ Returns a **dictionary** with computed psychoacoustic results depending on the r
 | `'roughness'` | Time-varying **roughness** (**asper**). |
 | `'tonality_sottek'` | Time-averaged **Sottek tonality index** (**tu_HMS**). |
 | `'tonality_aures'` | Average **Aures tonality index** (**t.u.**). |
-| `'tnr'` | Dictionary from `tone_to_noise_ratio()` with keys: `'tnr'`, `'frequencies'`, `'prominent'`, `'times'`, `'peak_limits'`, `'f_axis'`. |
-| `'prominence_ratio'` | Dictionary from `prominence_ratio()` with keys: `'PR'`, `'freqs'`, `'is_prominent'`, `'times'`. |
+| `'tnr'` | Dictionary from `tone_to_noise_ratio()` with keys: `'tnr'`, `'freqs'`, `'is_prominent'`, `'times'`, `'peak_limits'`, `'freq_axis'`. |
+| `'prominence_ratio'` | Dictionary from `prominence_ratio()` with keys: `'pr'`, `'freqs'`, `'is_prominent'`, `'times'`. |
 | `'plot_input'` | (optional) Returns a plotted waveform or spectrum if `"plot_input"` is included in `params`. |
 
 ---
@@ -540,7 +540,7 @@ results = psyacoustic_analysis(
 print(results["loudness_stationary"])
 print(results["sharpness"])
 print(results["tnr"]["tnr"])          # TNR values (dB)
-print(results["prominence_ratio"]["PR"])
+print(results["prominence_ratio"]["pr"])
 ```
 
 ---
