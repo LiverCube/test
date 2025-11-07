@@ -238,6 +238,9 @@ Computes **roughness (asper)** following the **Zwicker model (ISO 532‑1)**.
 - E. Zwicker & H. Fastl (2017) *Psychoacoustics: Facts and Models*
 
 ---
+## `tonality.py`
+
+Implements **tonal perception metrics** according to **ECMA‑418‑1** and **Aures (1985)** tonality model.
 
 ## `tonality_aures()`
 
@@ -289,12 +292,12 @@ Computes the **Tone‑to‑Noise Ratio (TNR)** according to **ECMA‑418‑1**.
 | **Name** | **Type** | **Description** |
 |-----------|-----------|----------------|
 | `results` | `dict` | Dictionary containing: |
-| | `'tnr'` : list or array — TNR values (dB). |
-| | `'frequencies'` : np.ndarray — Detected tone frequencies (Hz). |
-| | `'prominent'` : np.ndarray — Boolean flags for prominent tones. |
-| | `'times'` : np.ndarray or None — Frame timestamps (s) for time-varying analysis. |
-| | `'peak_limits'` : list[tuple[int, int]] — Frequency bin limits of detected peaks. |
-| | `'f_axis'` : np.ndarray — Frequency axis used for PSD calculation. |
+| | `'tnr'` | list or array — TNR values (dB). |
+| | `'frequencies'` | np.ndarray — Detected tone frequencies (Hz). |
+| | `'prominent'` | np.ndarray — Boolean flags for prominent tones. |
+| | `'times'` | np.ndarray or None — Frame timestamps (s) for time-varying analysis. |
+| | `'peak_limits'` | list[tuple[int, int]] — Frequency bin limits of detected peaks. |
+| | `'f_axis'` | np.ndarray — Frequency axis used for PSD calculation. |
 
 ## `prominence_ratio()`
 
@@ -323,10 +326,10 @@ Computes the **Prominence Ratio (PR)** per **ECMA‑418‑1** standard.
 | **Name** | **Type** | **Description** |
 |-----------|-----------|----------------|
 | `results` | `dict` | Dictionary containing: |
-| | `'PR'` : np.ndarray — PR values (vector or matrix). |
-| | `'freqs'` : np.ndarray — Frequency bins corresponding to PR values. |
-| | `'is_prominent'` : np.ndarray — Boolean mask of prominent tones. |
-| | `'times'` : np.ndarray — Time stamps for frames (only for time-varying analysis). |
+| | `'PR'` | np.ndarray — PR values (vector or matrix). |
+| | `'freqs'` | np.ndarray — Frequency bins corresponding to PR values. |
+| | `'is_prominent'` | np.ndarray — Boolean mask of prominent tones. |
+| | `'times'` | np.ndarray — Time stamps for frames (only for time-varying analysis). |
 
 **Helper Functions**
 
