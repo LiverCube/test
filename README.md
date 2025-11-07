@@ -238,6 +238,28 @@ Computes **roughness (asper)** following the **Zwicker model (ISO 532‑1)**.
 - E. Zwicker & H. Fastl (2017) *Psychoacoustics: Facts and Models*
 
 ---
+
+## `modulation.py`
+
+Helper functions for modulation‑based psychoacoustic analysis.
+
+| Function | Description |
+|-----------|-------------|
+| `sone2phon()` | Convert specific loudness from sone → phon scale. |
+| `assemble_bark_bands()` | Aggregate fine‑resolution channels into Bark bands. |
+| `filter_dc_and_transient()` | Remove DC offset and transient effects. |
+| `design_octave_filter()` | Design a Butterworth bandpass filter centered at f₀. |
+| `apply_octave_filter()` | Apply octave‑based bandpass to a signal. |
+| `envelope_filter()` | Extract signal envelope using zero‑phase LP filter. |
+| `detect_fmod()` | Detect dominant modulation frequency. |
+
+**References**
+
+- ISO 532‑1:2017 — *Methods for calculating loudness – Zwicker method*  
+- Fastl & Zwicker (2007)
+
+---
+
 ## `tonality.py`
 
 Implements **tonal perception metrics** according to **ECMA‑418‑1** and **Aures (1985)** tonality model.
@@ -415,19 +437,19 @@ Computes **tonality metrics** using the **Sottek model** (ECMA‑418‑2:2025).
 | **Name** | **Type** | **Description** |
 |-----------|-----------|----------------|
 | `OUT` | `dict` | Dictionary containing: |
-|  | `'specTonality'` — Time‑dependent specific tonality per Bark band. |
-|  | `'specTonalityAvg'` — Time‑averaged specific tonality. |
-|  | `'specTonalityFreqs'` — Frequency‑resolved specific tonality. |
-|  | `'specTonalityAvgFreqs'` — Power‑averaged frequency‑resolved tonality. |
-|  | `'specTonalLoudness'` — Tonal loudness per Bark band. |
-|  | `'specNoiseLoudness'` — Noise loudness per Bark band. |
-|  | `'tonalityTDep'` — Time‑dependent overall tonality. |
-|  | `'tonalityAvg'` — Time‑averaged overall tonality. |
-|  | `'tonalityTDepFreqs'` — Frequency‑resolved time‑dependent tonality. |
-|  | `'bandCentreFreqs'` — Bark‑band center frequencies (Hz). |
-|  | `'timeOut'` — Output time vector (s). |
-|  | `'timeInsig'` — Input time vector (s). |
-|  | `'soundField'` — Sound field used (`'free'` or `'diffuse'`). |
+|  || `'specTonality'` — Time‑dependent specific tonality per Bark band. |
+|  || `'specTonalityAvg'` — Time‑averaged specific tonality. |
+|  || `'specTonalityFreqs'` — Frequency‑resolved specific tonality. |
+|  || `'specTonalityAvgFreqs'` — Power‑averaged frequency‑resolved tonality. |
+|  || `'specTonalLoudness'` — Tonal loudness per Bark band. |
+|  || `'specNoiseLoudness'` — Noise loudness per Bark band. |
+|  || `'tonalityTDep'` — Time‑dependent overall tonality. |
+|  || `'tonalityAvg'` — Time‑averaged overall tonality. |
+|  || `'tonalityTDepFreqs'` — Frequency‑resolved time‑dependent tonality. |
+|  || `'bandCentreFreqs'` — Bark‑band center frequencies (Hz). |
+|  || `'timeOut'` — Output time vector (s). |
+|  || `'timeInsig'` — Input time vector (s). |
+|  || `'soundField'` — Sound field used (`'free'` or `'diffuse'`). |
 
 **Helper Functions**
 
@@ -490,7 +512,7 @@ Returns a **dictionary** with computed psychoacoustic results depending on the r
 ### Example Usage
 
 ```python
-from psytoolbox.analysis import psyacoustic_analysis
+from psytools.analysis import psyacoustic_analysis
 
 results = psyacoustic_analysis(
     input_path="example.wav",
@@ -527,26 +549,45 @@ print(results["prominence_ratio"]["PR"])
 
 Visualizes and compares psychoacoustic results across different analysis runs.
 
-### Main Function — `compare_metrics()`
+## Main Function — `compare_metrics()`
 
-| **Parameter** | **Type** | **Description** |
-|----------------|-----------|-----------------|
-| `output_dirs` | `list[str]` | List of folders containing psychoacoustic CSV results to compare. |
-| `font_size` | `int`, optional | Font size for plots (default = 14). |
-| `save_dir` | `str`, optional | Output directory for plots (`output/comparisons`). |
-| `metrics` | `list[str]`, optional | List of metric filenames to compare (default = all). |
-| `show` | `bool`, optional | Show plots interactively (default False). |
+| Parameter | Type | Description |
+|------------|------|--------------|
+| `output_dirs` | list[str] | Folders with psychoacoustic CSV results. |
+| `font_size` | int, optional | Font size for plots (default 14). |
+| `save_dir` | str, optional | Output for plots (default `output/comparisons`). |
+| `metrics` | list[str], optional | List of metric filenames to compare (default: all). |
+| `show` | bool, optional | Show plots interactively (default False). |
 
-**Returns**
- Generates and saves all comparison plots (PNG/PDF).
+**Returns:**
+Comparison plots saved as PNG/PDF.
 
-**Features**
+**Features:**  
+- Auto-detects metrics in each folder.  
+- Aligns time axes for fair comparison.  
+- Saves in `/png` and `/pdf` subfolders.  
+- Extendable via `PLOT_FUNCTIONS` registry.
 
-- Automatically detects which metrics are available in each folder.  
-- Aligns time axes across analyses for fair comparison.  
-- Saves plots in structured folders (`/plots/png` and `/plots/pdf`).  
-- Prints warnings for missing or mismatched data.  
-- Easily extendable via new plot registration in `PLOT_FUNCTIONS`.
+---
+
+### Example Usage
+
+```python
+from psytools.compare_metrics import compare_metrics
+
+output_dirs = [
+    "output/Railway",
+    "output/Airport",
+    "output/electric_axle_drive"
+]
+
+compare_metrics(
+    output_dirs=output_dirs,
+    font_size=14,
+    save_dir="output/comparisons",
+    show=False
+)
+```
 
 ---
 
@@ -572,28 +613,6 @@ Provides general‑purpose utilities for **audio loading**, **spectrum synthesis
 - Ensures consistent directory structure across analyses.  
 
 ---
-
-## `modulation.py`
-
-Helper functions for modulation‑based psychoacoustic analysis.
-
-| Function | Description |
-|-----------|-------------|
-| `sone2phon()` | Convert specific loudness from sone → phon scale. |
-| `assemble_bark_bands()` | Aggregate fine‑resolution channels into Bark bands. |
-| `filter_dc_and_transient()` | Remove DC offset and transient effects. |
-| `design_octave_filter()` | Design a Butterworth bandpass filter centered at f₀. |
-| `apply_octave_filter()` | Apply octave‑based bandpass to a signal. |
-| `envelope_filter()` | Extract signal envelope using zero‑phase LP filter. |
-| `detect_fmod()` | Detect dominant modulation frequency. |
-
-**References**
-
-- ISO 532‑1:2017 — *Methods for calculating loudness – Zwicker method*  
-- Fastl & Zwicker (2007)
-
----
-
 
 ## Validation
 
